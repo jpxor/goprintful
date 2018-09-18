@@ -10,9 +10,9 @@ type Client struct {
 	APIKey []byte
 }
 
-func NewClient() Client {
+func NewClient() *Client {
 	key := os.Getenv("PRINTFUL_APIKEY")
-	return Client{[]byte(key)}
+	return &Client{[]byte(key)}
 }
 
 func (r OrderRequest) toJSON() []byte {
@@ -38,7 +38,7 @@ type OrderRequest struct {
 // API Responses
 
 type OrderResponse struct {
-	Status        string `json:status`
+	Status        int    `json:status`
 	StatusMessage string `json:status_message`
 	Costs         Costs  `json:costs`
 	RetailCosts   Costs  `json:retail_costs`

@@ -9,7 +9,7 @@ import (
 	"net/http"
 )
 
-func (c Client) PlaceOrder(request OrderRequest) OrderResponse {
+func (c Client) DraftOrder(request OrderRequest) OrderResponse {
 	const url = "https://api.printful.com/orders"
 
 	//track costs
