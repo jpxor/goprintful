@@ -40,7 +40,8 @@ func (c Client) LiveShipRates(request OrderRequest) []ShippingMethod {
 
 // BestShipMethod is subjective, but this function returns the
 // most expensive shipping method available which comes under the
-// budgeted shipping expenses, which are defined per item
+// budgeted shipping expenses, which are defined per item. It assumes
+// more expensive shipping is better/faster
 func (c Client) BestShipMethod(order *OrderRequest) ShippingMethod {
 	shipMethods := c.LiveShipRates(*order)
 
