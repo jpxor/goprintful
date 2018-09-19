@@ -2,7 +2,6 @@ package goprintful
 
 import (
 	"bytes"
-	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -15,7 +14,7 @@ func (c Client) LiveShipRates(request OrderRequest) []ShippingMethod {
 	const url = "https://api.printful.com/shipping/rates"
 
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(request.toJSON()))
-	req.Header.Set("Authorization", "Basic "+base64.StdEncoding.EncodeToString(c.APIKey))
+	req.Header.Set("Authorization", "Basic "+c.APIKey)
 	req.Header.Set("Content-Type", "application/json")
 
 	client := &http.Client{}

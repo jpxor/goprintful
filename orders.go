@@ -2,14 +2,14 @@ package goprintful
 
 import (
 	"bytes"
-	"encoding/base64"
 	"encoding/json"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strings"
 )
 
-func (c Client) DraftOrder(request OrderRequest) OrderResponse {
+func (c Client) DraftOrder(request OrderRequest) (OrderResponse, error) {
 	const url = "https://api.printful.com/orders"
 
 	//track costs
@@ -27,13 +27,14 @@ func (c Client) DraftOrder(request OrderRequest) OrderResponse {
 	}
 
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(request.toJSON()))
-	req.Header.Set("Authorization", "Basic "+base64.StdEncoding.EncodeToString(c.APIKey))
+	req.Header.Set("Authorization", "Basic "+c.APIKey)
 	req.Header.Set("Content-Type", "application/json")
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
 		log.Println(err)
+		return OrderResponse{}, err
 	}
 	defer resp.Body.Close()
 	body, _ := ioutil.ReadAll(resp.Body)
@@ -42,6 +43,33 @@ func (c Client) DraftOrder(request OrderRequest) OrderResponse {
 	err = json.Unmarshal(body, &response)
 	if err != nil {
 		log.Println(err)
+		return response, err
 	}
-	return response
+	return response, nil
+}
+
+func (c Client) Fulfill(orderID string) (OrderResponse, error) {
+	const url = "https://api.printful.com/orders/{id}/confirm"
+	requestURL := strings.Replace(url, "{id}", orderID, 1)
+
+	req, err := http.NewRequest("POST", requestURL, nil)
+	req.Header.Set("Authorization", "Basic "+c.APIKey)
+	req.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Println(err)
+		return OrderResponse{}, err
+	}
+	defer resp.Body.Close()
+	body, _ := ioutil.ReadAll(resp.Body)
+
+	response := OrderResponse{}
+	err = json.Unmarshal(body, &response)
+	if err != nil {
+		log.Println(err)
+		return response, err
+	}
+	return response, nil
 }
